@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>寿司クリッカー</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
@@ -104,17 +103,14 @@ z-index:10;
 }
 
 .shopBtn{
-width:80%;
-max-width:400px;
 font-size:22px;
 padding:15px;
-margin:5px auto;
+margin:5px;
 border-radius:15px;
 border:none;
 background:#ffcc80;
 cursor:pointer;
 transition: transform 0.1s;
-display:block;
 }
 
 #menu{
@@ -161,20 +157,26 @@ cursor:pointer;
 <h2>🏪 寿司ショップ</h2>
 <div id="shopCount">🍣 0</div>
 
-<!-- 寿司職人まとめ買い -->
-<div>
-<button class="shopBtn" onclick="buyAuto(1)">👨‍🍳 ×1</button>
-<button class="shopBtn" onclick="buyAuto(10)">👨‍🍳 ×10</button>
-<button class="shopBtn" onclick="buyAuto(100)">👨‍🍳 ×100</button>
-<button class="shopBtn" onclick="buyAutoMax()">👨‍🍳 MAX</button>
+<!-- 寿司職人ボタンと横並びまとめ買い -->
+<div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; margin:10px 0;">
+  <button class="shopBtn" style="flex:3;" onclick="buyAuto(1)">👨‍🍳 寿司職人<br>自動で寿司を作る<br>価格:50</button>
+  <div style="flex:1; display:flex; flex-direction:column; margin-left:10px;">
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(1)">×1</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(10)">×10</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(100)">×100</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAutoMax()">MAX</button>
+  </div>
 </div>
 
-<!-- 包丁強化まとめ買い -->
-<div>
-<button class="shopBtn" onclick="buyPower(1)">🔪 ×1</button>
-<button class="shopBtn" onclick="buyPower(10)">🔪 ×10</button>
-<button class="shopBtn" onclick="buyPower(100)">🔪 ×100</button>
-<button class="shopBtn" onclick="buyPowerMax()">🔪 MAX</button>
+<!-- 包丁強化ボタンと横並びまとめ買い -->
+<div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; margin:10px 0;">
+  <button class="shopBtn" style="flex:3;" onclick="buyPower(1)">🔪 包丁強化<br>クリック寿司UP<br>価格:100</button>
+  <div style="flex:1; display:flex; flex-direction:column; margin-left:10px;">
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(1)">×1</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(10)">×10</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(100)">×100</button>
+    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPowerMax()">MAX</button>
+  </div>
 </div>
 
 <button class="shopBtn" onclick="rebirth()">🔁 リバース<br>倍率UP<br>必要:1000</button>
