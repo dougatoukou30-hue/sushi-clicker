@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>寿司クリッカー</title>
 
-<!-- スマホタップズーム防止 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
@@ -108,13 +107,14 @@ z-index:10;
 width:80%;
 max-width:400px;
 font-size:22px;
-padding:20px;
-margin:15px;
+padding:15px;
+margin:5px auto;
 border-radius:15px;
 border:none;
 background:#ffcc80;
 cursor:pointer;
 transition: transform 0.1s;
+display:block;
 }
 
 #menu{
@@ -160,10 +160,25 @@ cursor:pointer;
 <div id="shop" class="screen">
 <h2>🏪 寿司ショップ</h2>
 <div id="shopCount">🍣 0</div>
-<button class="shopBtn" onclick="buyAuto(this)">👨‍🍳 寿司職人<br>自動で寿司を作る<br>価格:50</button>
-<button class="shopBtn" onclick="buyPower(this)">🔪 包丁強化<br>クリック寿司UP<br>価格:100</button>
-<button class="shopBtn" onclick="rebirth(this)">🔁 リバース<br>倍率UP<br>必要:1000</button>
-<button class="shopBtn" onclick="gacha(this)">🎁 寿司ガチャ<br>ランダムボーナス<br>価格:300</button>
+
+<!-- 寿司職人まとめ買い -->
+<div>
+<button class="shopBtn" onclick="buyAuto(1)">👨‍🍳 ×1</button>
+<button class="shopBtn" onclick="buyAuto(10)">👨‍🍳 ×10</button>
+<button class="shopBtn" onclick="buyAuto(100)">👨‍🍳 ×100</button>
+<button class="shopBtn" onclick="buyAutoMax()">👨‍🍳 MAX</button>
+</div>
+
+<!-- 包丁強化まとめ買い -->
+<div>
+<button class="shopBtn" onclick="buyPower(1)">🔪 ×1</button>
+<button class="shopBtn" onclick="buyPower(10)">🔪 ×10</button>
+<button class="shopBtn" onclick="buyPower(100)">🔪 ×100</button>
+<button class="shopBtn" onclick="buyPowerMax()">🔪 MAX</button>
+</div>
+
+<button class="shopBtn" onclick="rebirth()">🔁 リバース<br>倍率UP<br>必要:1000</button>
+<button class="shopBtn" onclick="gacha()">🎁 寿司ガチャ<br>ランダムボーナス<br>価格:300</button>
 </div>
 
 <div id="menu" style="display:none">
@@ -256,20 +271,43 @@ btn.classList.add("shake")
 setTimeout(()=>{ btn.classList.remove("shake") },300)
 }
 
-function buyAuto(btn){
-shakeButton(btn)
-if(sushi<50){ alert("寿司が足りないよ！"); return }
-sushi-=50; auto++; update()
+/* 寿司職人まとめ買い */
+
+function buyAuto(quantity){
+const price=50
+let total = price*quantity
+if(quantity==="MAX"){
+  quantity=Math.floor(sushi/price)
+  total=price*quantity
+}
+if(sushi<total){ alert("寿司が足りないよ！"); return }
+sushi-=total
+auto+=quantity
+update()
 }
 
-function buyPower(btn){
-shakeButton(btn)
-if(sushi<100){ alert("寿司が足りないよ！"); return }
-sushi-=100; power++; update()
+function buyAutoMax(){ buyAuto("MAX") }
+
+/* 包丁強化まとめ買い */
+
+function buyPower(quantity){
+const price=100
+let total = price*quantity
+if(quantity==="MAX"){
+  quantity=Math.floor(sushi/price)
+  total=price*quantity
+}
+if(sushi<total){ alert("寿司が足りないよ！"); return }
+sushi-=total
+power+=quantity
+update()
 }
 
-function gacha(btn){
-shakeButton(btn)
+function buyPowerMax(){ buyPower("MAX") }
+
+/* ガチャ・リバース */
+
+function gacha(){
 if(sushi<300){ alert("寿司が足りないよ！"); return }
 sushi-=300
 let r=Math.random()
@@ -278,8 +316,7 @@ else{ auto+=2; alert("職人増えた！") }
 update()
 }
 
-function rebirth(btn){
-shakeButton(btn)
+function rebirth(){
 if(sushi<1000){ alert("寿司が足りないよ！"); return }
 sushi=0; power=1; auto=0; multiplier+=0.2
 alert("倍率アップ！")
