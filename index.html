@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>寿司クリッカー</title>
+
+<style>
+
+body{
+margin:0;
+font-family:sans-serif;
+background:#fff5f0;
+text-align:center;
+}
+
+/* 画面 */
+
+.screen{
+display:none;
+height:calc(100vh - 70px);
+overflow-y:auto;
+padding-top:40px;
+position:relative;
+}
+
+.active{
+display:block;
+}
+
+/* タイトル */
+
+#title{
+position:relative;
+}
+
+#title h1{
+font-size:60px;
+margin-top:150px;
+line-height:1.2;
+}
+
+#version{
+position:absolute;
+right:10px;
+bottom:10px;
+font-size:16px;
+color:#555;
+}
+
+/* スタートボタン */
+
+.startBtn{
+font-size:30px;
+padding:20px 40px;
+border:none;
+border-radius:10px;
+background:#ffcc80;
+cursor:pointer;
+}
+
+/* 寿司画像 */
+
+#sushi{
+width:400px;          /* 大きくして押しやすく */
+cursor:pointer;
+display:block;
+margin:40px auto;     
+transition: transform 0.1s;
+}
+
+/* 揺れるアニメーション */
+
+.shake{
+animation: shake 0.3s;
+}
+
+@keyframes shake{
+0% { transform: rotate(0deg);}
+25% { transform: rotate(10deg);}
+50% { transform: rotate(-10deg);}
+75% { transform: rotate(10deg);}
+100% { transform: rotate(0deg);}
+}
+
+/* 落ちる寿司 */
+
+.fall{
+position:absolute;
+width:50px;
+animation:fall 1s linear forwards;
+}
+
+@keyframes fall{
+0%{transform:translateY(0) rotate(0deg); opacity:1;}
+100%{transform:translateY(350px) rotate(360deg); opacity:0;}
+}
+
+/* ステータス */
+
+.stats{
+font-size:20px;
+margin:20px;
+}
+
+/* ショップ */
+
+#shopCount{
+position:absolute;
+top:10px;
+left:10px;
+font-size:22px;
+font-weight:bold;
+background:rgba(255,255,255,0.8);
+padding:5px 10px;
+border-radius:10px;
+z-index:10;
+}
+
+.shopBtn{
+width:80%;
+max-width:400px;
+font-size:22px;
+padding:20px;
+margin:15px;
+border-radius:15px;
+border:none;
+background:#ffcc80;
+cursor:pointer;
+transition: transform 0.1s;
+}
+
+/* 下メニュー */
+
+#menu{
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+background:white;
+border-top:2px solid #ddd;
+}
+
+#menu button{
+flex:1;
+font-size:20px;
+padding:15px;
+border:none;
+background:white;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- タイトル -->
+
+<div id="title" class="screen active">
+
+<h1>寿司<br>クリッカー</h1>
+<div id="version">Ver.1.0</div>
+
+<button class="startBtn" onclick="startGame()">ゲームスタート</button>
+
+</div>
+
+<!-- ゲーム -->
+
+<div id="game" class="screen">
+
+<h1>🍣 寿司クリッカー</h1>
+
+<div class="stats">
+
+🍣 寿司: <span id="count">0</span><br>
+👆 クリック: <span id="power">1</span><br>
+⚡ 秒間: <span id="auto">0</span><br>
+🔁 倍率: <span id="multiplier">1.0</span>
+
+</div>
+
+<img id="sushi"
+onclick="clickSushi()"
+src="https://irasutofree.com//media/2022/10/14/00007193.original.png">
+
+</div>
+
+<!-- ショップ -->
+
+<div id="shop" class="screen">
+
+<h2>🏪 寿司ショップ</h2>
+
+<div id="shopCount">🍣 0</div>
+
+<button class="shopBtn" onclick="buyAuto(this)">
+👨‍🍳 寿司職人<br>
+自動で寿司を作る<br>
+価格:50
+</button>
+
+<button class="shopBtn" onclick="buyPower(this)">
+🔪 包丁強化<br>
+クリック寿司UP<br>
+価格:100
+</button>
+
+<button class="shopBtn" onclick="rebirth(this)">
+🔁 リバース<br>
+倍率UP<br>
+必要:1000
+</button>
+
+<button class="shopBtn" onclick="gacha(this)">
+🎁 寿司ガチャ<br>
+ランダムボーナス<br>
+価格:300
+</button>
+
+</div>
+
+<!-- メニュー -->
+
+<div id="menu" style="display:none">
+
+<button onclick="show('game')">🍣 寿司</button>
+
+<button onclick="show('shop')">🏪 ショップ</button>
+
+</div>
+
+<!-- 音源 -->
+
+<audio id="clickSound">
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3">
+</audio>
+
+<audio id="bgm" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/09/17/audio_d18a.mp3">
+</audio>
+
+<script>
+
+let sushi=0
+let power=1
+let auto=0
+let multiplier=1
+
+function save(){
+localStorage.setItem("sushiSave",JSON.stringify({sushi,power,auto,multiplier}))
+}
+
+function load(){
+let data=localStorage.getItem("sushiSave")
+if(data){
+let d=JSON.parse(data)
+sushi=Number(d.sushi)||0
+power=Number(d.power)||1
+auto=Number(d.auto)||0
+multiplier=Number(d.multiplier)||1
+}
+}
+
+function startGame(){
+show("game")
+document.getElementById("menu").style.display="flex"
+
+let bgm = document.getElementById("bgm")
+bgm.play().catch(e=>console.log("BGM再生ブロック",e))
+}
+
+function show(screen){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"))
+document.getElementById(screen).classList.add("active")
+update()
+}
+
+function update(){
+document.getElementById("count").innerText=Math.floor(sushi)
+document.getElementById("power").innerText=power
+document.getElementById("auto").innerText=auto
+document.getElementById("multiplier").innerText=multiplier.toFixed(1)
+let shopCountDiv=document.getElementById("shopCount")
+if(shopCountDiv){
+shopCountDiv.innerText="🍣 "+Math.floor(sushi)
+}
+save()
+}
+
+/* 落下寿司 */
+
+function fallSushi(){
+let s=document.createElement("img")
+s.src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
+s.className="fall"
+s.style.left=Math.random()*window.innerWidth+"px"
+s.style.top="200px"
+document.body.appendChild(s)
+setTimeout(()=>{ s.remove() },1000)
+}
+
+/* クリック寿司 */
+
+function clickSushi(){
+sushi+=power*multiplier
+document.getElementById("clickSound").currentTime=0
+document.getElementById("clickSound").play()
+let sushiImg=document.getElementById("sushi")
+sushiImg.classList.add("shake")
+setTimeout(()=>{ sushiImg.classList.remove("shake") },300)
+fallSushi()
+update()
+}
+
+/* 揺れる演出付きショップ関数 */
+
+function shakeButton(btn){
+btn.classList.add("shake")
+setTimeout(()=>{ btn.classList.remove("shake") },300)
+}
+
+function buyAuto(btn){
+shakeButton(btn)
+if(sushi<50){ alert("寿司が足りないよ！"); return }
+sushi-=50; auto++; update()
+}
+
+function buyPower(btn){
+shakeButton(btn)
+if(sushi<100){ alert("寿司が足りないよ！"); return }
+sushi-=100; power++; update()
+}
+
+function gacha(btn){
+shakeButton(btn)
+if(sushi<300){ alert("寿司が足りないよ！"); return }
+sushi-=300
+let r=Math.random()
+if(r<0.5){ power+=2; alert("クリック強化！") }
+else{ auto+=2; alert("職人増えた！") }
+update()
+}
+
+function rebirth(btn){
+shakeButton(btn)
+if(sushi<1000){ alert("寿司が足りないよ！"); return }
+sushi=0; power=1; auto=0; multiplier+=0.2
+alert("倍率アップ！")
+update()
+}
+
+/* 自動寿司 */
+
+setInterval(()=>{ sushi+=auto*multiplier; update() },1000)
+
+load()
+update()
+
+</script>
+
+</body>
+</html>
