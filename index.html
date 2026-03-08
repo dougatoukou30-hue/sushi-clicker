@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <title>寿司クリッカー</title>
 
+<!-- スマホタップズーム防止 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <style>
 
 body{
@@ -61,11 +64,12 @@ cursor:pointer;
 /* 寿司画像 */
 
 #sushi{
-width:400px;          /* 大きくして押しやすく */
+width:400px;          
 cursor:pointer;
 display:block;
 margin:40px auto;     
 transition: transform 0.1s;
+touch-action: manipulation; /* タップ時ズーム防止 */
 }
 
 /* 揺れるアニメーション */
