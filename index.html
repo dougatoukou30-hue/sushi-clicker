@@ -4,42 +4,49 @@
 <meta charset="UTF-8">
 <title>寿司クリッカー</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <style>
 
 body{
 margin:0;
 font-family:sans-serif;
-text-align:center;
 background:#fff5f0;
+text-align:center;
+touch-action: manipulation;
 }
 
 .screen{
 display:none;
-padding-top:60px;
+height:100vh;
 }
 
 .active{
 display:block;
 }
 
-h1{
+#title h1{
 font-size:60px;
+margin-top:150px;
 }
 
 .startBtn{
-font-size:35px;
-padding:25px 60px;
-background:#ffc857;
+font-size:32px;
+padding:20px 50px;
 border:none;
 border-radius:12px;
+background:#ffcc80;
 }
 
 #sushi{
 width:420px;
+cursor:pointer;
 margin-top:40px;
-touch-action:manipulation;
+}
+
+.stats{
+font-size:22px;
+margin-top:20px;
 }
 
 #menu{
@@ -48,25 +55,24 @@ bottom:0;
 width:100%;
 display:flex;
 background:white;
-border-top:2px solid #ccc;
+border-top:2px solid #ddd;
 }
 
 #menu button{
 flex:1;
-font-size:25px;
-padding:20px;
+font-size:22px;
+padding:18px;
 border:none;
 background:white;
 }
 
 .shopBtn{
-font-size:25px;
-padding:20px;
+font-size:22px;
+padding:15px;
 margin:10px;
-border:none;
 border-radius:10px;
-background:#ffd166;
-width:80%;
+border:none;
+background:#ffcc80;
 }
 
 </style>
@@ -75,6 +81,7 @@ width:80%;
 <body>
 
 <!-- タイトル -->
+
 <div id="title" class="screen active">
 
 <h1>
@@ -86,61 +93,79 @@ width:80%;
 ゲームスタート
 </button>
 
-<div style="position:absolute;right:10px;bottom:10px">
-Ver.2.0
+<div style="position:absolute; right:10px; bottom:10px;">
+Ver.1.0
 </div>
 
 </div>
+
 
 <!-- ゲーム -->
+
 <div id="game" class="screen">
 
-<h2>
-🍣 寿司
-</h2>
+<h1>🍣寿司クリッカー</h1>
 
-<div style="font-size:30px">
+<div class="stats">
+
+🍣寿司  
 <span id="count">0</span>
+
+<br>
+
+👆クリック  
+<span id="power">1</span>
+
+<br>
+
+⚡秒間  
+<span id="auto">0</span>
+
 </div>
 
-<img id="sushi"
-src="https://irasutofree.com//media/2022/10/14/00007193.original.png">
+<img
+id="sushi"
+src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
+>
 
 </div>
+
 
 <!-- ショップ -->
+
 <div id="shop" class="screen">
 
 <h2>寿司ショップ</h2>
 
-<div style="font-size:25px">
-寿司: <span id="shopCount">0</span>
-</div>
-
-<button class="shopBtn" id="chefBtn">
-寿司職人 +1自動<br>
+<button class="shopBtn" onclick="buyChef()">
+👨‍🍳寿司職人  
+自動寿司 +1  
 50🍣
 </button>
 
-<button class="shopBtn" id="knifeBtn">
-包丁強化 +1クリック<br>
+<button class="shopBtn" onclick="buyKnife()">
+🔪包丁強化  
+クリック +1  
 100🍣
 </button>
 
 </div>
 
+
 <!-- メニュー -->
+
 <div id="menu" style="display:none">
 
-<button id="menuGame">
-寿司
+<button onclick="show('game')">
+🍣寿司
 </button>
 
-<button id="menuShop">
-ショップ
+<button onclick="show('shop')">
+🏪ショップ
 </button>
 
 </div>
+
 
 <script>
 
@@ -148,26 +173,43 @@ var sushi=0
 var power=1
 var auto=0
 
-function show(id){
+
+function startGame(){
+
+show("game")
+
+document.getElementById("menu").style.display="flex"
+
+}
+
+
+function show(screen){
 
 var screens=document.getElementsByClassName("screen")
 
 for(var i=0;i<screens.length;i++){
+
 screens[i].classList.remove("active")
+
 }
 
-document.getElementById(id).classList.add("active")
+document.getElementById(screen).classList.add("active")
 
 update()
 
 }
 
+
 function update(){
 
-document.getElementById("count").innerHTML=Math.floor(sushi)
-document.getElementById("shopCount").innerHTML=Math.floor(sushi)
+document.getElementById("count").innerText=Math.floor(sushi)
+
+document.getElementById("power").innerText=power
+
+document.getElementById("auto").innerText=auto
 
 }
+
 
 function clickSushi(){
 
@@ -176,6 +218,7 @@ sushi+=power
 update()
 
 }
+
 
 function buyChef(){
 
@@ -189,11 +232,12 @@ return
 
 sushi-=50
 
-auto+=1
+auto++
 
 update()
 
 }
+
 
 function buyKnife(){
 
@@ -207,19 +251,12 @@ return
 
 sushi-=100
 
-power+=1
+power++
 
 update()
 
 }
 
-function startGame(){
-
-show("game")
-
-document.getElementById("menu").style.display="flex"
-
-}
 
 setInterval(function(){
 
@@ -230,27 +267,20 @@ update()
 },1000)
 
 
-// ボタンイベント
+// WiiU対応クリック
 
-document.getElementById("startBtn").addEventListener("click",startGame)
-document.getElementById("startBtn").addEventListener("touchstart",startGame)
+var sushiImg=document.getElementById("sushi")
 
-document.getElementById("sushi").addEventListener("click",clickSushi)
-document.getElementById("sushi").addEventListener("touchstart",clickSushi)
+sushiImg.addEventListener("click",clickSushi)
+sushiImg.addEventListener("touchstart",clickSushi)
 
-document.getElementById("chefBtn").addEventListener("click",buyChef)
-document.getElementById("chefBtn").addEventListener("touchstart",buyChef)
 
-document.getElementById("knifeBtn").addEventListener("click",buyKnife)
-document.getElementById("knifeBtn").addEventListener("touchstart",buyKnife)
+// WiiUスタートボタン対応
 
-document.getElementById("menuGame").addEventListener("click",function(){
-show("game")
-})
+var startButton=document.getElementById("startBtn")
 
-document.getElementById("menuShop").addEventListener("click",function(){
-show("shop")
-})
+startButton.addEventListener("click",startGame)
+startButton.addEventListener("touchstart",startGame)
 
 </script>
 
