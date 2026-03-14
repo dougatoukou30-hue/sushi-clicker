@@ -3,114 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <title>寿司クリッカー</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
 <style>
 
 body{
 margin:0;
 font-family:sans-serif;
-background:#fff5f0;
 text-align:center;
+background:#fff5f0;
 }
 
 .screen{
 display:none;
-height:calc(100vh - 70px);
-overflow-y:auto;
-padding-top:40px;
-position:relative;
+padding-top:60px;
 }
 
 .active{
 display:block;
 }
 
-#title{
-position:relative;
-}
-
-#title h1{
+h1{
 font-size:60px;
-margin-top:150px;
-line-height:1.2;
-}
-
-#version{
-position:absolute;
-right:10px;
-bottom:10px;
-font-size:16px;
-color:#555;
 }
 
 .startBtn{
-font-size:30px;
-padding:20px 40px;
+font-size:35px;
+padding:25px 60px;
+background:#ffc857;
 border:none;
-border-radius:10px;
-background:#ffcc80;
-cursor:pointer;
+border-radius:12px;
 }
 
 #sushi{
-width:400px;
-cursor:pointer;
-display:block;
-margin:40px auto;
-transition: transform 0.1s;
-touch-action: manipulation;
-}
-
-.shake{
-animation: shake 0.3s;
-}
-
-@keyframes shake{
-0% { transform: rotate(0deg);}
-25% { transform: rotate(10deg);}
-50% { transform: rotate(-10deg);}
-75% { transform: rotate(10deg);}
-100% { transform: rotate(0deg);}
-}
-
-.fall{
-position:absolute;
-width:50px;
-animation:fall 1s linear forwards;
-}
-
-@keyframes fall{
-0%{transform:translateY(0) rotate(0deg); opacity:1;}
-100%{transform:translateY(350px) rotate(360deg); opacity:0;}
-}
-
-.stats{
-font-size:20px;
-margin:20px;
-}
-
-#shopCount{
-position:absolute;
-top:10px;
-left:10px;
-font-size:22px;
-font-weight:bold;
-background:rgba(255,255,255,0.8);
-padding:5px 10px;
-border-radius:10px;
-z-index:10;
-}
-
-.shopBtn{
-font-size:22px;
-padding:15px;
-margin:5px;
-border-radius:15px;
-border:none;
-background:#ffcc80;
-cursor:pointer;
-transition: transform 0.1s;
+width:420px;
+margin-top:40px;
+touch-action:manipulation;
 }
 
 #menu{
@@ -119,16 +48,25 @@ bottom:0;
 width:100%;
 display:flex;
 background:white;
-border-top:2px solid #ddd;
+border-top:2px solid #ccc;
 }
 
 #menu button{
 flex:1;
-font-size:20px;
-padding:15px;
+font-size:25px;
+padding:20px;
 border:none;
 background:white;
-cursor:pointer;
+}
+
+.shopBtn{
+font-size:25px;
+padding:20px;
+margin:10px;
+border:none;
+border-radius:10px;
+background:#ffd166;
+width:80%;
 }
 
 </style>
@@ -136,206 +74,183 @@ cursor:pointer;
 
 <body>
 
+<!-- タイトル -->
 <div id="title" class="screen active">
-<h1>寿司<br>クリッカー</h1>
-<div id="version">Ver.1.0</div>
-<button class="startBtn" onclick="startGame()">ゲームスタート</button>
+
+<h1>
+寿司<br>
+クリッカー
+</h1>
+
+<button class="startBtn" id="startBtn">
+ゲームスタート
+</button>
+
+<div style="position:absolute;right:10px;bottom:10px">
+Ver.1.0
 </div>
 
+</div>
+
+<!-- ゲーム -->
 <div id="game" class="screen">
-<h1>🍣 寿司クリッカー</h1>
-<div class="stats">
-🍣 寿司: <span id="count">0</span><br>
-👆 クリック: <span id="power">1</span><br>
-⚡ 秒間: <span id="auto">0</span><br>
-🔁 倍率: <span id="multiplier">1.0</span>
-</div>
-<img id="sushi" src="https://irasutofree.com//media/2022/10/14/00007193.original.png">
+
+<h2>
+🍣 寿司
+</h2>
+
+<div style="font-size:30px">
+<span id="count">0</span>
 </div>
 
+<img id="sushi"
+src="https://irasutofree.com//media/2022/10/14/00007193.original.png">
+
+</div>
+
+<!-- ショップ -->
 <div id="shop" class="screen">
-<h2>🏪 寿司ショップ</h2>
-<div id="shopCount">🍣 0</div>
 
-<!-- 寿司職人ボタンと横並びまとめ買い -->
-<div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; margin:10px 0;">
-  <button class="shopBtn" style="flex:3;" onclick="buyAuto(1)">👨‍🍳 寿司職人<br>自動で寿司を作る<br>価格:50</button>
-  <div style="flex:1; display:flex; flex-direction:column; margin-left:10px;">
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(1)">×1</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(10)">×10</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAuto(100)">×100</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyAutoMax()">MAX</button>
-  </div>
+<h2>寿司ショップ</h2>
+
+<div style="font-size:25px">
+寿司: <span id="shopCount">0</span>
 </div>
 
-<!-- 包丁強化ボタンと横並びまとめ買い -->
-<div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; margin:10px 0;">
-  <button class="shopBtn" style="flex:3;" onclick="buyPower(1)">🔪 包丁強化<br>クリック寿司UP<br>価格:100</button>
-  <div style="flex:1; display:flex; flex-direction:column; margin-left:10px;">
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(1)">×1</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(10)">×10</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPower(100)">×100</button>
-    <button class="shopBtn" style="font-size:16px; padding:5px;" onclick="buyPowerMax()">MAX</button>
-  </div>
+<button class="shopBtn" id="chefBtn">
+寿司職人 +1自動<br>
+50🍣
+</button>
+
+<button class="shopBtn" id="knifeBtn">
+包丁強化 +1クリック<br>
+100🍣
+</button>
+
 </div>
 
-<button class="shopBtn" onclick="rebirth()">🔁 リバース<br>倍率UP<br>必要:1000</button>
-<button class="shopBtn" onclick="gacha()">🎁 寿司ガチャ<br>ランダムボーナス<br>価格:300</button>
-</div>
-
+<!-- メニュー -->
 <div id="menu" style="display:none">
-<button onclick="show('game')">🍣 寿司</button>
-<button onclick="show('shop')">🏪 ショップ</button>
+
+<button id="menuGame">
+寿司
+</button>
+
+<button id="menuShop">
+ショップ
+</button>
+
 </div>
-
-<audio id="clickSound">
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3">
-</audio>
-
-<audio id="bgm" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/09/17/audio_d18a.mp3">
-</audio>
 
 <script>
 
-let sushi=0
-let power=1
-let auto=0
-let multiplier=1
+var sushi=0
+var power=1
+var auto=0
 
-function save(){
-localStorage.setItem("sushiSave",JSON.stringify({sushi,power,auto,multiplier}))
+function show(id){
+
+var screens=document.getElementsByClassName("screen")
+
+for(var i=0;i<screens.length;i++){
+screens[i].classList.remove("active")
 }
 
-function load(){
-let data=localStorage.getItem("sushiSave")
-if(data){
-let d=JSON.parse(data)
-sushi=Number(d.sushi)||0
-power=Number(d.power)||1
-auto=Number(d.auto)||0
-multiplier=Number(d.multiplier)||1
-}
-}
+document.getElementById(id).classList.add("active")
 
-function startGame(){
-show("game")
-document.getElementById("menu").style.display="flex"
-let bgm = document.getElementById("bgm")
-bgm.play().catch(e=>console.log("BGM再生ブロック",e))
-}
-
-function show(screen){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"))
-document.getElementById(screen).classList.add("active")
 update()
+
 }
 
 function update(){
-document.getElementById("count").innerText=Math.floor(sushi)
-document.getElementById("power").innerText=power
-document.getElementById("auto").innerText=auto
-document.getElementById("multiplier").innerText=multiplier.toFixed(1)
-let shopCountDiv=document.getElementById("shopCount")
-if(shopCountDiv){ shopCountDiv.innerText="🍣 "+Math.floor(sushi) }
-save()
+
+document.getElementById("count").innerHTML=Math.floor(sushi)
+document.getElementById("shopCount").innerHTML=Math.floor(sushi)
+
 }
-
-/* 落下寿司 */
-
-function fallSushi(){
-let s=document.createElement("img")
-s.src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
-s.className="fall"
-s.style.left=Math.random()*window.innerWidth+"px"
-s.style.top="200px"
-document.body.appendChild(s)
-setTimeout(()=>{ s.remove() },1000)
-}
-
-/* クリック寿司 */
 
 function clickSushi(){
-sushi+=power*multiplier
-document.getElementById("clickSound").currentTime=0
-document.getElementById("clickSound").play()
-let sushiImg=document.getElementById("sushi")
-sushiImg.classList.add("shake")
-setTimeout(()=>{ sushiImg.classList.remove("shake") },300)
-fallSushi()
+
+sushi+=power
+
 update()
+
 }
 
-/* 揺れる演出付きショップ関数 */
+function buyChef(){
 
-function shakeButton(btn){
-btn.classList.add("shake")
-setTimeout(()=>{ btn.classList.remove("shake") },300)
+if(sushi<50){
+
+alert("寿司が足りないよ")
+
+return
+
 }
 
-/* 寿司職人まとめ買い */
+sushi-=50
 
-function buyAuto(quantity){
-const price=50
-let total = price*quantity
-if(quantity==="MAX"){
-  quantity=Math.floor(sushi/price)
-  total=price*quantity
-}
-if(sushi<total){ alert("寿司が足りないよ！"); return }
-sushi-=total
-auto+=quantity
+auto+=1
+
 update()
+
 }
 
-function buyAutoMax(){ buyAuto("MAX") }
+function buyKnife(){
 
-/* 包丁強化まとめ買い */
+if(sushi<100){
 
-function buyPower(quantity){
-const price=100
-let total = price*quantity
-if(quantity==="MAX"){
-  quantity=Math.floor(sushi/price)
-  total=price*quantity
+alert("寿司が足りないよ")
+
+return
+
 }
-if(sushi<total){ alert("寿司が足りないよ！"); return }
-sushi-=total
-power+=quantity
+
+sushi-=100
+
+power+=1
+
 update()
+
 }
 
-function buyPowerMax(){ buyPower("MAX") }
+function startGame(){
 
-/* ガチャ・リバース */
+show("game")
 
-function gacha(){
-if(sushi<300){ alert("寿司が足りないよ！"); return }
-sushi-=300
-let r=Math.random()
-if(r<0.5){ power+=2; alert("クリック強化！") }
-else{ auto+=2; alert("職人増えた！") }
-update()
+document.getElementById("menu").style.display="flex"
+
 }
 
-function rebirth(){
-if(sushi<1000){ alert("寿司が足りないよ！"); return }
-sushi=0; power=1; auto=0; multiplier+=0.2
-alert("倍率アップ！")
+setInterval(function(){
+
+sushi+=auto
+
 update()
-}
 
-/* 自動寿司 */
+},1000)
 
-setInterval(()=>{ sushi+=auto*multiplier; update() },1000)
 
-/* 複数指タップ対応 */
-const sushiImg = document.getElementById("sushi")
-sushiImg.addEventListener("pointerdown", clickSushi)
-sushiImg.addEventListener("touchstart", clickSushi)
+// ボタンイベント
 
-load()
-update()
+document.getElementById("startBtn").addEventListener("click",startGame)
+document.getElementById("startBtn").addEventListener("touchstart",startGame)
+
+document.getElementById("sushi").addEventListener("click",clickSushi)
+document.getElementById("sushi").addEventListener("touchstart",clickSushi)
+
+document.getElementById("chefBtn").addEventListener("click",buyChef)
+document.getElementById("chefBtn").addEventListener("touchstart",buyChef)
+
+document.getElementById("knifeBtn").addEventListener("click",buyKnife)
+document.getElementById("knifeBtn").addEventListener("touchstart",buyKnife)
+
+document.getElementById("menuGame").addEventListener("click",function(){
+show("game")
+})
+
+document.getElementById("menuShop").addEventListener("click",function(){
+show("shop")
+})
 
 </script>
 
