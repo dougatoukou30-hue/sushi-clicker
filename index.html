@@ -47,18 +47,38 @@ border-radius:12px;
 background:#ffcc80;
 }
 
-/* ステータス */
+/* ステータス横並び */
 
 .stats{
 
-font-size:28px;
-line-height:1.7;
+display:flex;
+justify-content:center;
+gap:30px;
 
-margin-top:10px;
+font-size:24px;
+
+margin-top:20px;
+margin-bottom:20px;
+
+flex-wrap:wrap;
 
 }
 
-/* 寿司位置修正 */
+.statBox{
+
+background:white;
+
+padding:15px 20px;
+
+border-radius:16px;
+
+min-width:120px;
+
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+
+}
+
+/* 寿司位置 */
 
 #sushiArea{
 
@@ -68,12 +88,12 @@ display:flex;
 justify-content:center;
 align-items:center;
 
-margin-top:30px;
+margin-top:20px;
 margin-bottom:120px;
 
 }
 
-/* 寿司サイズ */
+/* 寿司 */
 
 #sushi{
 
@@ -169,7 +189,7 @@ z-index:1000;
 </button>
 
 <div style="position:absolute; right:10px; bottom:10px;">
-Ver.1.6
+Ver.1.9
 </div>
 
 </div>
@@ -182,18 +202,20 @@ Ver.1.6
 
 <div class="stats">
 
+<div class="statBox">
 🍣寿司<br>
 <span id="count">0</span>
+</div>
 
-<br><br>
-
+<div class="statBox">
 👆クリック<br>
 <span id="power">1</span>
+</div>
 
-<br><br>
-
+<div class="statBox">
 ⚡秒間<br>
 <span id="auto">0</span>
+</div>
 
 </div>
 
@@ -212,7 +234,13 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 
 <div id="shop" class="screen">
 
-<h2>🏪寿司ショップ</h2>
+<h2>
+🏪寿司ショップ
+<br>
+<span style="font-size:24px;">
+🍣 <span id="shopSushiCount">0</span>
+</span>
+</h2>
 
 <!-- 寿司職人 -->
 
@@ -413,6 +441,9 @@ formatNumber(Math.floor(chefPrice))
 
 document.getElementById("knifePriceText").innerText =
 formatNumber(Math.floor(knifePrice))
+
+document.getElementById("shopSushiCount").innerText =
+formatNumber(sushi)
 
 }
 
