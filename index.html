@@ -14,21 +14,28 @@ font-family:sans-serif;
 background:#fff5f0;
 text-align:center;
 touch-action:manipulation;
+overflow:hidden;
 }
 
 .screen{
 display:none;
 height:100vh;
 overflow-y:auto;
+padding-bottom:100px;
+box-sizing:border-box;
 }
 
 .active{
 display:block;
 }
 
+h1{
+margin-top:20px;
+font-size:52px;
+}
+
 #title h1{
-font-size:60px;
-margin-top:150px;
+margin-top:140px;
 line-height:1.2;
 }
 
@@ -40,43 +47,72 @@ border-radius:12px;
 background:#ffcc80;
 }
 
+/* ステータス */
+
 .stats{
-font-size:24px;
-margin-top:20px;
+
+font-size:28px;
+line-height:1.7;
+
+margin-top:10px;
+
 }
+
+/* 寿司位置修正 */
 
 #sushiArea{
-width:500px;
-height:500px;
-margin:auto;
+
+width:100%;
+
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
+
+margin-top:30px;
+margin-bottom:120px;
+
 }
 
+/* 寿司サイズ */
+
 #sushi{
-width:420px;
+
+width:320px;
+max-width:70vw;
+
+display:block;
+
+transition:0.1s;
+
 }
+
+/* 下メニュー */
 
 #menu{
 position:fixed;
 bottom:0;
+left:0;
+
 width:100%;
 display:flex;
+
 background:white;
 border-top:2px solid #ddd;
+z-index:999;
 }
 
 #menu button{
 flex:1;
-font-size:22px;
-padding:18px;
+font-size:26px;
+padding:20px;
 border:none;
 background:white;
 }
 
+/* ショップ */
+
 .shopItem{
-margin-bottom:30px;
+margin-bottom:35px;
 }
 
 .shopBtn{
@@ -88,22 +124,32 @@ border-radius:10px;
 background:#ffcc80;
 }
 
+/* セーブ表示 */
+
 #saveText{
 position:fixed;
 top:10px;
 right:10px;
+
 background:rgba(0,0,0,0.7);
 color:white;
+
 padding:8px 12px;
 border-radius:10px;
+
 font-size:16px;
+
 display:none;
+
+z-index:1000;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- セーブ通知 -->
 
 <div id="saveText">
 💾 セーブ完了
@@ -123,7 +169,7 @@ display:none;
 </button>
 
 <div style="position:absolute; right:10px; bottom:10px;">
-Ver.1.1
+Ver.1.5
 </div>
 
 </div>
@@ -190,7 +236,7 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 
 </div>
 
-<!-- 包丁強化 -->
+<!-- 包丁 -->
 
 <div class="shopItem">
 
@@ -214,7 +260,7 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 
 </div>
 
-<!-- メニュー -->
+<!-- 下メニュー -->
 
 <div id="menu" style="display:none">
 
@@ -341,6 +387,18 @@ sushi += power
 
 update()
 
+// 揺れる演出
+
+var sushiImg = document.getElementById("sushi")
+
+sushiImg.style.transform = "scale(0.95) rotate(3deg)"
+
+setTimeout(function(){
+
+sushiImg.style.transform = "scale(1) rotate(0deg)"
+
+},100)
+
 }
 
 
@@ -373,7 +431,7 @@ update()
 }
 
 
-// 包丁強化
+// 包丁
 
 function buyKnife(amount){
 
@@ -431,6 +489,21 @@ sushiArea.addEventListener("touchstart", clickSushi)
 sushiArea.addEventListener("pointerdown", clickSushi)
 
 
+// Spaceキー対応
+
+document.addEventListener("keydown", function(event){
+
+if(event.code === "Space"){
+
+event.preventDefault()
+
+clickSushi()
+
+}
+
+})
+
+
 // スタートボタン
 
 var startButton = document.getElementById("startBtn")
@@ -440,7 +513,7 @@ startButton.addEventListener("touchstart", startGame)
 startButton.addEventListener("pointerdown", startGame)
 
 
-// ロード実行
+// ロード
 
 loadGame()
 
@@ -449,17 +522,4 @@ update()
 </script>
 
 </body>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "..."
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-</script>
 </html>
