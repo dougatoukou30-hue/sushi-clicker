@@ -169,7 +169,7 @@ z-index:1000;
 </button>
 
 <div style="position:absolute; right:10px; bottom:10px;">
-Ver.1.5
+Ver.1.6
 </div>
 
 </div>
@@ -221,7 +221,7 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 <button class="shopBtn" onclick="buyChef(1)">
 👨‍🍳寿司職人<br>
 自動寿司 +1<br>
-50🍣
+<span id="chefPriceText">50</span>🍣
 </button>
 
 <br>
@@ -243,7 +243,7 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 <button class="shopBtn" onclick="buyKnife(1)">
 🔪包丁強化<br>
 クリック +1<br>
-100🍣
+<span id="knifePriceText">100</span>🍣
 </button>
 
 <br>
@@ -280,6 +280,30 @@ var sushi = 0
 var power = 1
 var auto = 0
 
+var chefPrice = 50
+var knifePrice = 100
+
+
+// 数字省略
+
+function formatNumber(num){
+
+if(num >= 1e33) return (num / 1e33).toFixed(1) + " Dc"
+if(num >= 1e30) return (num / 1e30).toFixed(1) + " No"
+if(num >= 1e27) return (num / 1e27).toFixed(1) + " Oc"
+if(num >= 1e24) return (num / 1e24).toFixed(1) + " Sp"
+if(num >= 1e21) return (num / 1e21).toFixed(1) + " Sx"
+if(num >= 1e18) return (num / 1e18).toFixed(1) + " Qi"
+if(num >= 1e15) return (num / 1e15).toFixed(1) + " Qa"
+if(num >= 1e12) return (num / 1e12).toFixed(1) + " T"
+if(num >= 1e9) return (num / 1e9).toFixed(1) + " B"
+if(num >= 1e6) return (num / 1e6).toFixed(1) + " M"
+if(num >= 1e3) return (num / 1e3).toFixed(1) + " K"
+
+return Math.floor(num)
+
+}
+
 
 // セーブ
 
@@ -289,7 +313,9 @@ var data = {
 
 sushi:sushi,
 power:power,
-auto:auto
+auto:auto,
+chefPrice:chefPrice,
+knifePrice:knifePrice
 
 }
 
@@ -313,6 +339,9 @@ var save = JSON.parse(data)
 sushi = save.sushi || 0
 power = save.power || 1
 auto = save.auto || 0
+
+chefPrice = save.chefPrice || 50
+knifePrice = save.knifePrice || 100
 
 }
 
@@ -370,11 +399,20 @@ update()
 
 function update(){
 
-document.getElementById("count").innerText = Math.floor(sushi)
+document.getElementById("count").innerText =
+formatNumber(sushi)
 
-document.getElementById("power").innerText = power
+document.getElementById("power").innerText =
+formatNumber(power)
 
-document.getElementById("auto").innerText = auto
+document.getElementById("auto").innerText =
+formatNumber(auto)
+
+document.getElementById("chefPriceText").innerText =
+formatNumber(Math.floor(chefPrice))
+
+document.getElementById("knifePriceText").innerText =
+formatNumber(Math.floor(knifePrice))
 
 }
 
@@ -408,23 +446,38 @@ function buyChef(amount){
 
 if(amount=="MAX"){
 
-amount = Math.floor(sushi / 50)
+while(sushi >= chefPrice){
+
+sushi -= chefPrice
+
+auto += 1
+
+chefPrice = Math.floor(chefPrice * 1.15)
 
 }
 
-var price = 50 * amount
-
-if(sushi < price || amount <= 0){
-
-alert("寿司が足りないよ")
+update()
 
 return
 
 }
 
-sushi -= price
+for(var i=0;i<amount;i++){
 
-auto += amount
+if(sushi < chefPrice){
+
+alert("寿司が足りないよ")
+break
+
+}
+
+sushi -= chefPrice
+
+auto += 1
+
+chefPrice = Math.floor(chefPrice * 1.15)
+
+}
 
 update()
 
@@ -437,23 +490,38 @@ function buyKnife(amount){
 
 if(amount=="MAX"){
 
-amount = Math.floor(sushi / 100)
+while(sushi >= knifePrice){
+
+sushi -= knifePrice
+
+power += 1
+
+knifePrice = Math.floor(knifePrice * 1.15)
 
 }
 
-var price = 100 * amount
-
-if(sushi < price || amount <= 0){
-
-alert("寿司が足りないよ")
+update()
 
 return
 
 }
 
-sushi -= price
+for(var i=0;i<amount;i++){
 
-power += amount
+if(sushi < knifePrice){
+
+alert("寿司が足りないよ")
+break
+
+}
+
+sushi -= knifePrice
+
+power += 1
+
+knifePrice = Math.floor(knifePrice * 1.15)
+
+}
 
 update()
 
