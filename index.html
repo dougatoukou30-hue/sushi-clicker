@@ -184,12 +184,50 @@ z-index:1000;
 クリッカー
 </h1>
 
+<div style="margin-top:30px;">
+
+<input
+id="nameInput"
+type="text"
+placeholder="名前を入力"
+style="
+font-size:24px;
+padding:10px;
+border-radius:10px;
+border:2px solid #ccc;
+width:250px;
+text-align:center;
+">
+
+<br><br>
+
+<button
+class="shopBtn"
+onclick="registerPlayer()"
+>
+登録
+</button>
+
+</div>
+
+<br>
+
+<div id="playerText"
+style="
+font-size:22px;
+font-weight:bold;
+">
+未登録
+</div>
+
+<br>
+
 <button class="startBtn" id="startBtn">
 ゲームスタート
 </button>
 
 <div style="position:absolute; right:10px; bottom:10px;">
-Ver.1.9
+Ver.2.0
 </div>
 
 </div>
@@ -204,7 +242,7 @@ Ver.1.9
 
 <div class="statBox">
 🍣寿司<br>
-<span id="count">0</span>
+<span id="count">1</span>
 </div>
 
 <div class="statBox">
@@ -288,6 +326,25 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 
 </div>
 
+<!-- ランキング -->
+
+<div id="ranking" class="screen">
+
+<h2>🏆ランキング</h2>
+
+<div
+id="rankingList"
+style="
+font-size:24px;
+margin-top:20px;
+"
+>
+
+ランキングなし
+
+</div>
+
+</div>
 <!-- 下メニュー -->
 
 <div id="menu" style="display:none">
@@ -298,6 +355,10 @@ src="https://irasutofree.com//media/2022/10/14/00007193.original.png"
 
 <button onclick="show('shop')">
 🏪ショップ
+</button>
+
+<button onclick="show('ranking')">
+🏆ランキング
 </button>
 
 </div>
@@ -311,6 +372,114 @@ var auto = 0
 var chefPrice = 50
 var knifePrice = 100
 
+let playerName =
+localStorage.getItem("playerName")
+
+let rankings =
+JSON.parse(
+localStorage.getItem("rankings")
+) || []
+
+const ownerCode =
+"RAZE_OWNER"
+
+const reservedNames = [
+"らぜ"
+]
+
+function registerPlayer(){
+
+let name =
+document.getElementById(
+"nameInput"
+).value.trim()
+
+if(!name){
+alert("名前を入力してください")
+return
+}
+
+if(name === "らぜ"){
+
+let code =
+prompt("オーナーコードを入力")
+
+if(code !== ownerCode){
+alert("この名前は登録されています")
+return
+}
+
+name = "👑らぜ[管理者]"
+}
+
+playerName = name
+
+localStorage.setItem(
+"playerName",
+playerName
+)
+
+document.getElementById(
+"playerText"
+).innerText =
+"👤 " + playerName
+
+alert(playerName + " で登録しました！")
+
+updateRanking()
+}
+
+function updateRanking(){
+
+if(!playerName){
+return
+}
+
+let found = false
+
+for(let i=0;i<rankings.length;i++){
+
+if(rankings[i].name === playerName){
+
+rankings[i].score = sushi
+found = true
+break
+
+}
+
+}
+
+if(!found){
+
+rankings.push({
+name: playerName,
+score: sushi
+})
+
+}
+
+rankings.sort(function(a,b){
+return b.score-a.score
+})
+
+localStorage.setItem(
+"rankings",
+JSON.stringify(rankings)
+)
+
+let html = ""
+
+for(let i=0;i<Math.min(10,rankings.length);i++){
+
+let medal = (i===0)?"🥇":(i===1)?"🥈":(i===2)?"🥉":(i+1)+"位"
+
+html += medal+" "+rankings[i].name+" "+formatNumber(rankings[i].score)+"<br><br>"
+
+}
+
+document.getElementById("rankingList").innerHTML = html
+
+}
 
 // 数字省略
 
@@ -357,7 +526,14 @@ showSaveText()
 // ロード
 
 function loadGame(){
+if(playerName){
 
+document.getElementById(
+"playerText"
+).innerText =
+"👤 " + playerName
+
+}
 var data = localStorage.getItem("sushiSave")
 
 if(data){
@@ -397,9 +573,21 @@ text.style.display = "none"
 
 function startGame(){
 
+if(!playerName){
+
+alert(
+"先に名前を登録してください"
+)
+
+return
+
+}
+
 show("game")
 
-document.getElementById("menu").style.display="flex"
+document.getElementById(
+"menu"
+).style.display="flex"
 
 }
 
@@ -408,7 +596,8 @@ document.getElementById("menu").style.display="flex"
 
 function show(screen){
 
-var screens = document.getElementsByClassName("screen")
+var screens =
+document.getElementsByClassName("screen")
 
 for(var i=0;i<screens.length;i++){
 
@@ -416,9 +605,16 @@ screens[i].classList.remove("active")
 
 }
 
-document.getElementById(screen).classList.add("active")
+document.getElementById(screen)
+.classList.add("active")
 
 update()
+
+if(screen==="ranking"){
+
+updateRanking()
+
+}
 
 }
 
@@ -442,8 +638,12 @@ formatNumber(Math.floor(chefPrice))
 document.getElementById("knifePriceText").innerText =
 formatNumber(Math.floor(knifePrice))
 
-document.getElementById("shopSushiCount").innerText =
+document.getElementById(
+"shopSushiCount"
+).innerText =
 formatNumber(sushi)
+
+updateRanking()
 
 }
 
@@ -619,6 +819,5 @@ loadGame()
 update()
 
 </script>
-
 </body>
 </html>
